@@ -1,0 +1,33 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: vehicles-db-service
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password_segura
+      MYSQL_DATABASE: db_vehiculos
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: vehicles-api-service
+    restart: always
+    ports:
+      - "5001:5000"
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: password_segura
+      DB_NAME: db_vehiculos
+      FLASK_ENV: development
+      PORT: 5000
