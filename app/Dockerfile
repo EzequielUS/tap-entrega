@@ -1,10 +1,14 @@
 FROM python:3.11-slim
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt /requirements.txt
+COPY run.py /run.py
+
+RUN pip install --no-cache-dir -r /requirements.txt
 
 COPY . .
 
-CMD ["python", "run.py"]
+EXPOSE 8080
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "run:app"]
